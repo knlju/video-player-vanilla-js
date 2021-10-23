@@ -162,7 +162,7 @@ video.addEventListener("loadedmetadata", () => {
 
     if(playbackRate) updateSpeed(playbackRate)
     if(volume) updateVolume(volume)
-    if(video.muted !== muted) toggleMute()
+    if(muted && (video.muted !== muted)) toggleMute()
     handleTimeUpdate()
     isVideoLoaded = true
 })
