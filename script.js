@@ -1,19 +1,13 @@
 const video = document.querySelector("video")
-
 const videoPlaybackRates = [0.5, 0.75, 1, 1.5, 2]
-
 const msgContainerDiv = document.querySelector(".message")
 const msgINode = msgContainerDiv.querySelector("i")
-
 const volumeInput = document.querySelector("#volume")
 const fullscreenNode = document.querySelector(".fullscreen-action")
 const volumeIcon = document.querySelector("#volume-icon")
-
 const fullProgressBar = document.querySelector(".progress-bar-full")
 const progressBar = document.querySelector(".progress-bar")
-
 const timeContainer = document.querySelector(".time")
-
 const speedContainer = document.querySelector(".speed-container")
 const speedPicker = speedContainer.querySelector(".speed-picker")
 const speedOptions = speedPicker.querySelectorAll(".speed-option")
@@ -23,7 +17,7 @@ let msgTimeout = false
 let isVideoLoaded = false
 
 const flashMessage = (msg, isIcon = false) => {
-    if(!isVideoLoaded) return
+    if (!isVideoLoaded) return
     if (msgTimeout) clearTimeout(msgTimeout)
     msgContainerDiv.classList.add("show")
     if (isIcon) {
@@ -39,6 +33,7 @@ const flashMessage = (msg, isIcon = false) => {
 const togglePlay = () => video.paused ? (video.play(), flashMessage("play", true)) : (video.pause(), flashMessage("pause", true))
 
 const skip = seconds => video.currentTime += seconds
+
 const updateVolume = volume => {
     if (video.muted) toggleMute()
     video.volume = volume
@@ -91,7 +86,8 @@ const incrementVolume = increace => {
 }
 
 const handleTimeUpdate = () => {
-    const pbw = (video.currentTime / video.duration) * 100 + "%"
+    const a = (video.currentTime / video.duration * 100)
+    const pbw = a + "%"
     fullProgressBar.style.width = pbw
     const currTimeFormatted = new Date(1000 * video.currentTime).toISOString().substr(14, 5)
     const lengthFormatter = new Date(1000 * video.duration).toISOString().substr(14, 5)
@@ -111,7 +107,7 @@ const handleOptionSelect = el => {
 }
 
 const keyboardEventHandlers = e => {
-    if([32, 37, 38, 39, 40, 70, 75, 77].includes(e.keyCode)) e.preventDefault()
+    if ([32, 37, 38, 39, 40, 70, 75, 77].includes(e.keyCode)) e.preventDefault()
     if (e.keyCode === 32 || e.keyCode === 75) {
         togglePlay()
     }
@@ -135,34 +131,28 @@ const keyboardEventHandlers = e => {
     }
 }
 
-video.addEventListener("click", togglePlay)
-video.addEventListener("dblclick", toggleFullscreen)
-video.addEventListener("timeupdate", handleTimeUpdate)
-
-volumeInput.addEventListener("input", e => updateVolume(e.target.value))
-
-fullscreenNode.addEventListener("click", toggleFullscreen)
-
-progressBar.addEventListener("click", seek)
-
-speedContainer.addEventListener("click", toggleSpeedOptions)
-
-speedOptions.forEach(option => option.addEventListener("click", () => handleOptionSelect(option)))
-
-volumeIcon.addEventListener("click", toggleMute)
-
-window.addEventListener("keydown", keyboardEventHandlers)
-
-// init
-
-video.addEventListener("loadedmetadata", () => {
+const init = () => {
     const volume = parseFloat(localStorage.getItem("volume"))
     const playbackRate = parseFloat(localStorage.getItem("playbackSpeed"))
     const muted = JSON.parse(localStorage.getItem("muted"))
 
-    if(playbackRate) updateSpeed(playbackRate)
-    if(volume) updateVolume(volume)
-    if(muted && (video.muted !== muted)) toggleMute()
+    if (playbackRate) updateSpeed(playbackRate)
+    if (volume) updateVolume(volume)
+    if (muted && (video.muted !== muted)) toggleMute()
     handleTimeUpdate()
     isVideoLoaded = true
-})
+}
+
+video.addEventListener("click", togglePlay)
+video.addEventListener("dblclick", toggleFullscreen)
+video.addEventListener("timeupdate", handleTimeUpdate)
+volumeInput.addEventListener("input", e => updateVolume(e.target.value))
+fullscreenNode.addEventListener("click", toggleFullscreen)
+progressBar.addEventListener("click", seek)
+speedContainer.addEventListener("click", toggleSpeedOptions)
+speedOptions.forEach(option => option.addEventListener("click", () => handleOptionSelect(option)))
+volumeIcon.addEventListener("click", toggleMute)
+window.addEventListener("keydown", keyboardEventHandlers)
+video.addEventListener("loadedmetadata", init)
+// workaround loadedmetadata race condition
+if(video.readyState >= 2) init()
