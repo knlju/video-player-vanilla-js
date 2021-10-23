@@ -13,79 +13,81 @@
 </head>
 
 <body>
-    <h1>Video player</h1>
-    <div class="video-container">
-        <div class="message">
-            <i class="fa fa-pause"></i>
-        </div>
-        <div class="video-title">
-            Saitama vs Genos
-        </div>
-        <video>
-            <source src="Saitama vs Genos.mp4" type="video/mp4" />
-        </video>
-        <div class="controls">
-            <div class="progress-bar action">
-                <div class="progress-bar-full"></div>
+    <main>
+        <h1>Video player</h1>
+        <div class="video-container">
+            <div class="message">
+                <i class="fa fa-pause"></i>
             </div>
-            <div class="video-footer">
-                <div class="time">-- / --</div>
-                <div class="video-controls">
-                    <div class="video-control action">
-                        <label for="volume">
-                            <i class="fa fa-volume-up action" id="volume-icon"></i>
-                        </label>
-                        <input type="range" value="1" min="0" max="1" step="0.01" id="volume" class="volume-slider action">
-                    </div>
-                    <div class="video-control action speed-container">
-                       <span class="desktop-only">speed:</span> <span class="current-speed">1.00x</span>
-                       <div class="speed-picker">
-                           <div class="speed-option" data-option="4"><span class="desktop-only">speed:</span>2.00x</div>
-                           <div class="speed-option" data-option="3"><span class="desktop-only">speed:</span>1.50x</div>
-                           <div class="speed-option" data-option="2"><span class="desktop-only">speed:</span>1.00x</div>
-                           <div class="speed-option" data-option="1"><span class="desktop-only">speed:</span>0.75x</div>
-                           <div class="speed-option" data-option="0"><span class="desktop-only">speed:</span>0.50x</div>
-                       </div>
-                    </div>
-                    <div class="video-control fullscreen-action action">
-                        <i class="fa fa-expand"></i>
-                        <i class="fa fa-compress fs-only"></i>
+            <div class="video-title">
+                Saitama vs Genos
+            </div>
+            <video>
+                <source src="Saitama vs Genos.mp4" type="video/mp4" />
+            </video>
+            <div class="controls">
+                <div class="progress-bar action">
+                    <div class="progress-bar-full"></div>
+                </div>
+                <div class="video-footer">
+                    <div class="time">-- / --</div>
+                    <div class="video-controls">
+                        <div class="video-control action">
+                            <label for="volume">
+                                <i class="fa fa-volume-up action" id="volume-icon"></i>
+                            </label>
+                            <input type="range" value="1" min="0" max="1" step="0.01" id="volume" class="volume-slider action">
+                        </div>
+                        <div class="video-control action speed-container">
+                           <span class="desktop-only">speed:</span> <span class="current-speed">1.00x</span>
+                           <div class="speed-picker">
+                               <div class="speed-option" data-option="4"><span class="desktop-only">speed:</span>2.00x</div>
+                               <div class="speed-option" data-option="3"><span class="desktop-only">speed:</span>1.50x</div>
+                               <div class="speed-option" data-option="2"><span class="desktop-only">speed:</span>1.00x</div>
+                               <div class="speed-option" data-option="1"><span class="desktop-only">speed:</span>0.75x</div>
+                               <div class="speed-option" data-option="0"><span class="desktop-only">speed:</span>0.50x</div>
+                           </div>
+                        </div>
+                        <div class="video-control fullscreen-action action">
+                            <i class="fa fa-expand"></i>
+                            <i class="fa fa-compress fs-only"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="keyboard-controls">
-        <div class="keyboard-controls-title">Keyboard controls</div>
-        <div class="keyboard-controls-row">
-            <div class="keyboard-control-key">↑</div>
-            <div class="keyboard-control-description">Volume up</div>
+        <div class="keyboard-controls">
+            <div class="keyboard-controls-title">Keyboard controls</div>
+            <div class="keyboard-controls-row">
+                <div class="keyboard-control-key">↑</div>
+                <div class="keyboard-control-description">Volume up</div>
+            </div>
+            <div class="keyboard-controls-row">
+                <div class="keyboard-control-key">↓</div>
+                <div class="keyboard-control-description">volume down</div>
+            </div>
+            <div class="keyboard-controls-row">
+                <div class="keyboard-control-key">→</div>
+                <div class="keyboard-control-description">Speed up</div>
+            </div>
+            <div class="keyboard-controls-row">
+                <div class="keyboard-control-key">←</div>
+                <div class="keyboard-control-description">speed down</div>
+            </div>
+            <div class="keyboard-controls-row">
+                <div class="keyboard-control-key">k, space</div>
+                <div class="keyboard-control-description">play / pause</div>
+            </div>
+            <div class="keyboard-controls-row">
+                <div class="keyboard-control-key">m</div>
+                <div class="keyboard-control-description">toggle mute</div>
+            </div>
+            <div class="keyboard-controls-row">
+                <div class="keyboard-control-key">f</div>
+                <div class="keyboard-control-description">toggle fullscreen</div>
+            </div>
         </div>
-        <div class="keyboard-controls-row">
-            <div class="keyboard-control-key">↓</div>
-            <div class="keyboard-control-description">volume down</div>
-        </div>
-        <div class="keyboard-controls-row">
-            <div class="keyboard-control-key">→</div>
-            <div class="keyboard-control-description">Speed up</div>
-        </div>
-        <div class="keyboard-controls-row">
-            <div class="keyboard-control-key">←</div>
-            <div class="keyboard-control-description">speed down</div>
-        </div>
-        <div class="keyboard-controls-row">
-            <div class="keyboard-control-key">k, space</div>
-            <div class="keyboard-control-description">play / pause</div>
-        </div>
-        <div class="keyboard-controls-row">
-            <div class="keyboard-control-key">m</div>
-            <div class="keyboard-control-description">toggle mute</div>
-        </div>
-        <div class="keyboard-controls-row">
-            <div class="keyboard-control-key">f</div>
-            <div class="keyboard-control-description">toggle fullscreen</div>
-        </div>
-    </div>
+    </main>
 </body>
 
 </html>

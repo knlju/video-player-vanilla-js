@@ -11,6 +11,11 @@ h1 {
     letter-spacing: 1px;
 }
 
+main {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
 .video-container {
     margin: 24px;
     box-sizing: border-box;
