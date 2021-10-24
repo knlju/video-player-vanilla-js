@@ -32,16 +32,6 @@ video {
     margin: 0 auto;
 }
 
-.video-container:hover .controls {
-    transform: translateY(0);
-    box-shadow: 0px 6px 39px 7px #000000;
-}
-
-.video-container:hover .video-title {
-    display: block;
-    box-shadow: 0px 6px 39px 7px #000000;
-}
-
 .controls {
     position: absolute;
     display: block;
@@ -213,19 +203,37 @@ video {
 
 .video-title {
     position: absolute;
+    top: 0;
     left: 0;
     right: 0;
-    background-color: black;
+    background: linear-gradient(#000, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.15));
     opacity: .6;
     display: none;
     color: white;
-    padding: 5px 5px 5px 15px;
+    padding: 5px 5px 15px 15px;
+}
+
+.show-controls {
+    transform: translateY(0);
+    box-shadow: 0px 6px 39px 7px #000000;
+}
+
+.show-title {
+    display: block;
+    box-shadow: 0px 6px 39px 7px rgba(0, 0, 0, .2);
+}
+
+.controls:hover {
+    transform: translateY(0);
+    box-shadow: 0px 6px 39px 7px #000000;
+}
+
+.video-title:hover {
+    display: block;
+    box-shadow: 0px 6px 39px 7px rgba(0, 0, 0, .2);
 }
 
 @media screen and (max-width: 480px), screen and (max-width: 768px) and (orientation: landscape) {
-    body {
-        font-size: 10px;
-    }
     .keyboard-controls-title {
         font-size: 15px;
     }

@@ -1,5 +1,7 @@
 const video = document.querySelector("video")
-const videoPlaybackRates = [0.5, 0.75, 1, 1.5, 2]
+const videoContainer = document.querySelector(".video-container")
+const videoControls = document.querySelector(".controls")
+const videoTitle = document.querySelector(".video-title")
 const msgContainerDiv = document.querySelector(".message")
 const msgINode = msgContainerDiv.querySelector("i")
 const volumeInput = document.querySelector("#volume")
@@ -13,6 +15,7 @@ const speedPicker = speedContainer.querySelector(".speed-picker")
 const speedOptions = speedPicker.querySelectorAll(".speed-option")
 const speedSpan = document.querySelector(".current-speed")
 
+const videoPlaybackRates = [0.5, 0.75, 1, 1.5, 2]
 let msgTimeout = false
 let isVideoLoaded = false
 
@@ -30,7 +33,18 @@ const flashMessage = (msg, isIcon = false) => {
     msgTimeout = setTimeout(() => msgContainerDiv.classList.remove("show"), 100)
 }
 
-const togglePlay = () => video.paused ? (video.play(), flashMessage("play", true)) : (video.pause(), flashMessage("pause", true))
+const togglePlay = () => {
+    if(pbActionStarted) return
+    if (video.paused) {
+        video.play()
+        flashMessage("play", true)
+        setTimeout(hideVideoOptions, 500)
+    } else {
+        video.pause()
+        flashMessage("pause", true)
+        setOptionsTimeout()
+    }
+}
 
 const skip = seconds => video.currentTime += seconds
 
@@ -52,7 +66,7 @@ const updateSpeed = speed => {
     localStorage.setItem("playbackSpeed", speed)
 }
 
-const toggleFullscreen = () => document.fullscreenElement ? document.exitFullscreen() : video.parentNode.requestFullscreen()
+const toggleFullscreen = () => document.fullscreenElement ? document.exitFullscreen() : videoContainer.requestFullscreen()
 
 const toggleMute = () => {
     video.muted = !video.muted
@@ -90,13 +104,43 @@ const handleTimeUpdate = () => {
     const pbw = a + "%"
     fullProgressBar.style.width = pbw
     const currTimeFormatted = new Date(1000 * video.currentTime).toISOString().substr(14, 5)
-    const lengthFormatter = new Date(1000 * video.duration).toISOString().substr(14, 5)
-    timeContainer.innerText = currTimeFormatted + " / " + lengthFormatter
+    const lengthFormatted = new Date(1000 * video.duration).toISOString().substr(14, 5)
+    timeContainer.innerText = currTimeFormatted + " / " + lengthFormatted
 }
 
-const seek = e => {
-    let seekedTime = (e.offsetX / progressBar.offsetWidth) * video.duration
+const seek = offsetX => {
+    const offsetXBound = Math.min(Math.max(offsetX, 0), progressBar.getBoundingClientRect().width)
+    let seekedTime = (offsetXBound / progressBar.offsetWidth) * video.duration
     video.currentTime = seekedTime
+}
+
+let pbActionStarted = false
+let pausedAlready = false
+
+const handleProgressBarActionStart = e => {
+    e.touches && e.preventDefault()
+    pbActionStarted = true
+    pausedAlready = video.paused
+    video.pause()
+    const videoOffsetX = progressBar.getBoundingClientRect().x
+    const clickedOffsetX = e.clientX || e.targetTouches[0].clientX
+    const x = clickedOffsetX - videoOffsetX
+    // debugger
+    seek(x)
+}
+
+const handleProgressBarActionProgress = e => {
+    e.type.indexOf("mouse") !== -1 && e.preventDefault()
+    const videoOffsetX = progressBar.getBoundingClientRect().x
+    const clickedOffsetX = e.clientX || e.targetTouches[0].clientX
+    const x = clickedOffsetX - videoOffsetX
+    seek(x)
+}
+
+const handleProgressBarActionEnd = e => {
+    e.type.indexOf("mouse") !== -1 && e.preventDefault()
+    pbActionStarted = false
+    !pausedAlready && video.play()
 }
 
 const toggleSpeedOptions = () => speedPicker.classList.toggle("show-speed-options")
@@ -106,29 +150,37 @@ const handleOptionSelect = el => {
     updateSpeed(newPBRate)
 }
 
+let optionsTimeout = false
+
+const hideVideoOptions = () => {
+    videoControls.classList.remove("show-controls")
+    videoTitle.classList.remove("show-title")
+}
+
+const showOptions = e => {
+    videoControls.classList.add("show-controls")
+    videoTitle.classList.add("show-title")
+}
+
+const setOptionsTimeout = () => {
+    showOptions()
+    if (optionsTimeout) clearTimeout(optionsTimeout)
+    optionsTimeout = setTimeout(hideVideoOptions, 3000)
+}
+
+const handleMouseOverVC = e => setOptionsTimeout()
+const handleMouseLeaveVC = e => hideVideoOptions()
+
 const keyboardEventHandlers = e => {
-    if ([32, 37, 38, 39, 40, 70, 75, 77].includes(e.keyCode)) e.preventDefault()
-    if (e.keyCode === 32 || e.keyCode === 75) {
-        togglePlay()
-    }
-    if (e.keyCode === 38) {
-        incrementVolume(true)
-    }
-    if (e.keyCode === 40) {
-        incrementVolume(false)
-    }
-    if (e.keyCode === 39) {
-        changeSpeed(true)
-    }
-    if (e.keyCode === 37) {
-        changeSpeed(false)
-    }
-    if (e.keyCode === 77) {
-        toggleMute()
-    }
-    if (e.keyCode === 70) {
-        toggleFullscreen()
-    }
+    const usedKeys = [32, 37, 38, 39, 40, 70, 75, 77]
+    if (usedKeys.includes(e.keyCode)) e.preventDefault()
+    if (e.keyCode === 32 || e.keyCode === 75) togglePlay()
+    if (e.keyCode === 38) incrementVolume(true)
+    if (e.keyCode === 40) incrementVolume(false)
+    if (e.keyCode === 39) changeSpeed(true)
+    if (e.keyCode === 37) changeSpeed(false)
+    if (e.keyCode === 77) toggleMute()
+    if (e.keyCode === 70) toggleFullscreen()
 }
 
 const init = () => {
@@ -136,23 +188,36 @@ const init = () => {
     const playbackRate = parseFloat(localStorage.getItem("playbackSpeed"))
     const muted = JSON.parse(localStorage.getItem("muted"))
 
+    // predlog: dodaj video playback rate iz js-a da bi bilo custom 
     if (playbackRate) updateSpeed(playbackRate)
     if (volume) updateVolume(volume)
     if (muted && (video.muted !== muted)) toggleMute()
     handleTimeUpdate()
+
     isVideoLoaded = true
 }
 
-video.addEventListener("click", togglePlay)
+video.addEventListener("click", e => togglePlay(e))
 video.addEventListener("dblclick", toggleFullscreen)
 video.addEventListener("timeupdate", handleTimeUpdate)
+video.addEventListener("touchstart", setOptionsTimeout)
 volumeInput.addEventListener("input", e => updateVolume(e.target.value))
 fullscreenNode.addEventListener("click", toggleFullscreen)
-progressBar.addEventListener("click", seek)
+progressBar.addEventListener("mousedown", handleProgressBarActionStart)
+document.addEventListener("mousemove", e => pbActionStarted && handleProgressBarActionProgress(e))
+document.addEventListener("mouseup", e => pbActionStarted && handleProgressBarActionEnd(e))
+progressBar.addEventListener("touchstart", handleProgressBarActionStart)
+document.addEventListener("touchmove", e => pbActionStarted && handleProgressBarActionProgress(e))
+document.addEventListener("touchend", e => pbActionStarted && handleProgressBarActionEnd(e))
 speedContainer.addEventListener("click", toggleSpeedOptions)
 speedOptions.forEach(option => option.addEventListener("click", () => handleOptionSelect(option)))
 volumeIcon.addEventListener("click", toggleMute)
 window.addEventListener("keydown", keyboardEventHandlers)
+videoContainer.addEventListener("mousemove", handleMouseOverVC)
+videoContainer.addEventListener("mouseleave", handleMouseLeaveVC)
+videoControls.addEventListener
+
+// init saved settings
 video.addEventListener("loadedmetadata", init)
 // workaround loadedmetadata race condition
-if(video.readyState >= 2) init()
+if (video.readyState >= 2) init()
