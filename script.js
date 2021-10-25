@@ -14,6 +14,7 @@ const speedContainer = document.querySelector(".speed-container")
 const speedPicker = speedContainer.querySelector(".speed-picker")
 const speedOptions = speedPicker.querySelectorAll(".speed-option")
 const speedSpan = document.querySelector(".current-speed")
+const playIcon = document.querySelector("#toggle-play-icon")
 
 const videoPlaybackRates = [0.5, 0.75, 1, 1.5, 2]
 let msgTimeout = false
@@ -34,14 +35,16 @@ const flashMessage = (msg, isIcon = false) => {
 }
 
 const togglePlay = () => {
-    if(pbActionStarted) return
+    if (pbActionInProgress) return
     if (video.paused) {
         video.play()
         flashMessage("play", true)
+        playIcon.className = "fa fa-play"
         setTimeout(hideVideoOptions, 500)
     } else {
         video.pause()
         flashMessage("pause", true)
+        playIcon.className = "fa fa-pause"
         setOptionsTimeout()
     }
 }
@@ -99,48 +102,64 @@ const incrementVolume = increace => {
     updateVolume(newVolume)
 }
 
+const updateProgressbar = percentageWidth => fullProgressBar.style.width = `${percentageWidth}%`
+
 const handleTimeUpdate = () => {
-    const a = (video.currentTime / video.duration * 100)
-    const pbw = a + "%"
-    fullProgressBar.style.width = pbw
+    updateProgressbar(video.currentTime / video.duration * 100)
     const currTimeFormatted = new Date(1000 * video.currentTime).toISOString().substr(14, 5)
     const lengthFormatted = new Date(1000 * video.duration).toISOString().substr(14, 5)
     timeContainer.innerText = currTimeFormatted + " / " + lengthFormatted
 }
 
-const seek = offsetX => {
+const seekEnd = offsetX => {
     const offsetXBound = Math.min(Math.max(offsetX, 0), progressBar.getBoundingClientRect().width)
     let seekedTime = (offsetXBound / progressBar.offsetWidth) * video.duration
     video.currentTime = seekedTime
 }
 
-let pbActionStarted = false
+const seek = offsetX => {
+    const offsetXBound = Math.min(Math.max(offsetX, 0), progressBar.getBoundingClientRect().width)
+    let progresbarWidth = (offsetXBound / progressBar.offsetWidth) * 100
+    updateProgressbar(progresbarWidth)
+}
+
+const calculateOffsetAndSeek = (e, seekFunc) => {
+    const videoOffsetX = progressBar.getBoundingClientRect().x
+    // desktop or mobile
+    let clickedOffsetX
+    if (e.clientX) {
+        clickedOffsetX = e.clientX
+    } else if (e.targetTouches) {
+        const lastTouch = e.changedTouches[e.changedTouches.length - 1]
+        clickedOffsetX = lastTouch.targetTouches[0].clientX
+    } else clickedOffsetX = 0
+    const offsetX = clickedOffsetX - videoOffsetX
+    seekFunc(offsetX)
+}
+
+let pbActionInProgress = false
 let pausedAlready = false
 
 const handleProgressBarActionStart = e => {
-    e.touches && e.preventDefault()
-    pbActionStarted = true
+    e.type.indexOf("mouse") !== -1 && e.preventDefault()
+    pbActionInProgress = true
     pausedAlready = video.paused
     video.pause()
-    const videoOffsetX = progressBar.getBoundingClientRect().x
-    const clickedOffsetX = e.clientX || e.targetTouches[0].clientX
-    const x = clickedOffsetX - videoOffsetX
-    // debugger
-    seek(x)
+    calculateOffsetAndSeek(e, seek)
 }
 
 const handleProgressBarActionProgress = e => {
+    // prevent selection on desktop
     e.type.indexOf("mouse") !== -1 && e.preventDefault()
-    const videoOffsetX = progressBar.getBoundingClientRect().x
-    const clickedOffsetX = e.clientX || e.targetTouches[0].clientX
-    const x = clickedOffsetX - videoOffsetX
-    seek(x)
+    setOptionsTimeout()
+    calculateOffsetAndSeek(e, seek)
 }
 
 const handleProgressBarActionEnd = e => {
     e.type.indexOf("mouse") !== -1 && e.preventDefault()
-    pbActionStarted = false
+    pbActionInProgress = false
     !pausedAlready && video.play()
+    calculateOffsetAndSeek(e, seekEnd)
 }
 
 const toggleSpeedOptions = () => speedPicker.classList.toggle("show-speed-options")
@@ -155,6 +174,7 @@ let optionsTimeout = false
 const hideVideoOptions = () => {
     videoControls.classList.remove("show-controls")
     videoTitle.classList.remove("show-title")
+    speedPicker.classList.remove("show-speed-options")
 }
 
 const showOptions = e => {
@@ -204,18 +224,18 @@ video.addEventListener("touchstart", setOptionsTimeout)
 volumeInput.addEventListener("input", e => updateVolume(e.target.value))
 fullscreenNode.addEventListener("click", toggleFullscreen)
 progressBar.addEventListener("mousedown", handleProgressBarActionStart)
-document.addEventListener("mousemove", e => pbActionStarted && handleProgressBarActionProgress(e))
-document.addEventListener("mouseup", e => pbActionStarted && handleProgressBarActionEnd(e))
+document.addEventListener("mousemove", e => pbActionInProgress && handleProgressBarActionProgress(e))
+document.addEventListener("mouseup", e => pbActionInProgress && handleProgressBarActionEnd(e))
 progressBar.addEventListener("touchstart", handleProgressBarActionStart)
-document.addEventListener("touchmove", e => pbActionStarted && handleProgressBarActionProgress(e))
-document.addEventListener("touchend", e => pbActionStarted && handleProgressBarActionEnd(e))
+document.addEventListener("touchmove", e => pbActionInProgress && handleProgressBarActionProgress(e))
+document.addEventListener("touchend", e => pbActionInProgress && handleProgressBarActionEnd(e))
 speedContainer.addEventListener("click", toggleSpeedOptions)
 speedOptions.forEach(option => option.addEventListener("click", () => handleOptionSelect(option)))
 volumeIcon.addEventListener("click", toggleMute)
 window.addEventListener("keydown", keyboardEventHandlers)
 videoContainer.addEventListener("mousemove", handleMouseOverVC)
 videoContainer.addEventListener("mouseleave", handleMouseLeaveVC)
-videoControls.addEventListener
+playIcon.addEventListener("click", togglePlay)
 
 // init saved settings
 video.addEventListener("loadedmetadata", init)
