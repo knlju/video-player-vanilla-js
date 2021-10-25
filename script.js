@@ -131,7 +131,7 @@ const calculateOffsetAndSeek = (e, seekFunc) => {
         clickedOffsetX = e.clientX
     } else if (e.targetTouches) {
         const lastTouch = e.changedTouches[e.changedTouches.length - 1]
-        clickedOffsetX = lastTouch.targetTouches[0].clientX
+        clickedOffsetX = lastTouch.clientX
     } else clickedOffsetX = 0
     const offsetX = clickedOffsetX - videoOffsetX
     seekFunc(offsetX)
