@@ -39,12 +39,12 @@ const togglePlay = () => {
     if (video.paused) {
         video.play()
         flashMessage("play", true)
-        playIcon.className = "fa fa-play"
+        playIcon.className = "fa fa-pause"
         setTimeout(hideVideoOptions, 500)
     } else {
         video.pause()
         flashMessage("pause", true)
-        playIcon.className = "fa fa-pause"
+        playIcon.className = "fa fa-play"
         setOptionsTimeout()
     }
 }
