@@ -105,21 +105,26 @@ const incrementVolume = increace => {
 const updateProgressbar = percentageWidth => fullProgressBar.style.width = `${percentageWidth}%`
 
 const handleTimeUpdate = () => {
+    if (pbActionInProgress) return
     updateProgressbar(video.currentTime / video.duration * 100)
     const currTimeFormatted = new Date(1000 * video.currentTime).toISOString().substr(14, 5)
     const lengthFormatted = new Date(1000 * video.duration).toISOString().substr(14, 5)
     timeContainer.innerText = currTimeFormatted + " / " + lengthFormatted
 }
 
+let isPausedAlready = true
+
 const seekEnd = offsetX => {
     const offsetXBound = Math.min(Math.max(offsetX, 0), progressBar.getBoundingClientRect().width)
     let seekedTime = (offsetXBound / progressBar.offsetWidth) * video.duration
     video.currentTime = seekedTime
+    !isPausedAlready && video.play()
 }
 
 const seek = offsetX => {
     const offsetXBound = Math.min(Math.max(offsetX, 0), progressBar.getBoundingClientRect().width)
-    let progresbarWidth = (offsetXBound / progressBar.offsetWidth) * 100
+    let progresbarWidth = (offsetXBound / progressBar.offsetWidth) * 100;
+    !video.paused && video.pause()
     updateProgressbar(progresbarWidth)
 }
 
@@ -138,18 +143,16 @@ const calculateOffsetAndSeek = (e, seekFunc) => {
 }
 
 let pbActionInProgress = false
-let pausedAlready = false
 
 const handleProgressBarActionStart = e => {
     e.type.indexOf("mouse") !== -1 && e.preventDefault()
+    isPausedAlready = video.paused
     pbActionInProgress = true
-    pausedAlready = video.paused
-    video.pause()
     calculateOffsetAndSeek(e, seek)
 }
 
 const handleProgressBarActionProgress = e => {
-    // prevent selection on desktop
+    // prevent touch handler
     e.type.indexOf("mouse") !== -1 && e.preventDefault()
     setOptionsTimeout()
     calculateOffsetAndSeek(e, seek)
@@ -158,7 +161,6 @@ const handleProgressBarActionProgress = e => {
 const handleProgressBarActionEnd = e => {
     e.type.indexOf("mouse") !== -1 && e.preventDefault()
     pbActionInProgress = false
-    !pausedAlready && video.play()
     calculateOffsetAndSeek(e, seekEnd)
 }
 
@@ -229,6 +231,7 @@ document.addEventListener("mouseup", e => pbActionInProgress && handleProgressBa
 progressBar.addEventListener("touchstart", handleProgressBarActionStart)
 document.addEventListener("touchmove", e => pbActionInProgress && handleProgressBarActionProgress(e))
 document.addEventListener("touchend", e => pbActionInProgress && handleProgressBarActionEnd(e))
+document.addEventListener("touchcancel", e => pbActionInProgress && handleProgressBarActionEnd(e))
 speedContainer.addEventListener("click", toggleSpeedOptions)
 speedOptions.forEach(option => option.addEventListener("click", () => handleOptionSelect(option)))
 volumeIcon.addEventListener("click", toggleMute)

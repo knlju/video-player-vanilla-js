@@ -1,8 +1,6 @@
 body {
     margin: 0;
     font-family: sans-serif, Arial, Helvetica;
-    width: 100%;
-    font-size: 13px;
 }
 
 h1 {
@@ -41,6 +39,7 @@ video {
     background-color: black;
     opacity: .7;
     color: white;
+    font-size: 13px;
     transition: transform .15s ease-out;
     transform: translateY(100%) translateY(-4px);
 }
