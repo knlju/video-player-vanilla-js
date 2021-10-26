@@ -123,7 +123,7 @@ const seekEnd = offsetX => {
 
 const seek = offsetX => {
     const offsetXBound = Math.min(Math.max(offsetX, 0), progressBar.getBoundingClientRect().width)
-    let progresbarWidth = (offsetXBound / progressBar.offsetWidth) * 100;
+    let progresbarWidth = (offsetXBound / progressBar.offsetWidth) * 100
     !video.paused && video.pause()
     updateProgressbar(progresbarWidth)
 }
