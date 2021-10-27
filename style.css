@@ -1,0 +1,271 @@
+body {
+    margin: 0;
+    font-family: sans-serif, Arial, Helvetica;
+}
+
+h1 {
+    margin: 24px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+main {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.video-container {
+    margin: 24px;
+    box-sizing: border-box;
+    display: block;
+    box-shadow: 0px 5px 50px 5px #000000;
+    position: relative;
+    overflow: hidden;
+}
+
+video {
+    width: 100%;
+    min-width: 272px;
+    display: block;
+    margin: 0 auto;
+}
+
+.controls {
+    position: absolute;
+    display: block;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: black;
+    opacity: .7;
+    color: white;
+    font-size: 13px;
+    transition: transform .15s ease-out;
+    transform: translateY(100%) translateY(-4px);
+}
+
+.video-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 5px;
+}
+
+.left-controls {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+#toggle-play-icon {
+    padding: 5px;
+    width: 17px;
+}
+
+.video-controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    flex-basis: 100%;
+    width: 100%;
+}
+
+.video-control {
+    padding: 5px;
+}
+
+.video-control:first-child {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+}
+
+.exit-fullscreen {
+    display: none;
+}
+
+.fs-only {
+    /* override library */
+    display: none !important;
+}
+
+:fullscreen .exit-fullscreen {
+    display: block;
+}
+
+:fullscreen .fa-expand {
+    display: none;
+}
+
+:fullscreen .fs-only {
+    /* override library */
+    display: inline !important;
+}
+
+.video-container:fullscreen {
+    display: flex;
+    justify-content: center;
+}
+
+.keyboard-controls {
+    margin: 60px 24px 24px;
+}
+
+.keyboard-controls-title {
+    text-transform: uppercase;
+    font-size: 20px;
+    margin: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.keyboard-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 5px;
+}
+
+.keyboard-control-key {
+    background-color: #f5f5f5;
+    padding: 7px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.keyboard-control-description {
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.message {
+    display: flex;
+    position: absolute;
+    padding: 20px;
+    background-color: black;
+    height: 50px;
+    width: 50px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-size: 20px;
+    opacity: 0;
+    color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity .1s ease-in-out;
+}
+
+.show {
+    opacity: .7;
+}
+
+.progress-bar {
+    height: 8px;
+    transition: transform 0.1s ease-out;
+    background-color: darkgray;
+}
+
+.progress-bar:hover {
+    transform: scaleY(1.7);
+}
+
+.progress-bar-full {
+    background-color: yellow;
+    width: 1%;
+    height: 100%;
+}
+
+.volume-slider {
+    width: 100%;
+    max-width: 100px;
+}
+
+.action {
+    cursor: pointer;
+}
+
+.time {
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+    white-space: nowrap;
+}
+
+.speed-picker {
+    position: absolute;
+    background-color: black;
+    display: none;
+}
+
+.speed-option {
+    padding: 6px;
+    border: 1px solid white;
+}
+
+.show-speed-options {
+    transform: translateY(-100%) translateY(-15px);
+    display: block;
+}
+
+.video-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(#000, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.15));
+    opacity: .6;
+    display: none;
+    color: white;
+    font-size: 17px;
+    padding: 5px 5px 15px 15px;
+}
+
+.show-controls {
+    transform: translateY(0);
+    box-shadow: 0px 6px 39px 7px #000000;
+}
+
+.show-title {
+    display: block;
+    box-shadow: 0px 6px 39px 7px rgba(0, 0, 0, .2);
+}
+
+.controls:hover {
+    transform: translateY(0);
+    box-shadow: 0px 6px 39px 7px #000000;
+}
+
+.video-title:hover {
+    display: block;
+    box-shadow: 0px 6px 39px 7px rgba(0, 0, 0, .2);
+}
+
+@media screen and (max-width: 480px), screen and (max-width: 768px) and (orientation: landscape) {
+    .keyboard-controls-title {
+        font-size: 15px;
+    }
+    .keyboard-controls-description {
+        font-size: 12px;
+    }
+    .video-controls {
+        gap: 0;
+        padding: 0;
+    }
+    #toggle-play-icon {
+        padding: 2px;
+    }
+    .message {
+        width: 40px;
+        height: 40px;
+    }
+    .desktop-only {
+        display: none;
+    }
+    .speed-option {
+        padding: 3px;
+    }
+}
